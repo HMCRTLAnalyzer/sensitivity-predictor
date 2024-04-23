@@ -1,0 +1,47 @@
+#!/bin/python3
+
+import argparse
+import os
+import numpy as np
+import xgboost as xgb
+import pandas as pd
+import sys
+sys.path.insert(1, './feature-extractor/')
+from aigerdotlib import *
+from ml_lib import *
+
+# Argparse for inputs
+
+parser = argparse.ArgumentParser(
+                    prog='Sensitivity Predictor',
+                    description='',
+                    epilog='Takes a directory containing Verilog modules and outputs whether or not they are sensitive')
+
+
+parser.add_argument('path_to_rtl',help='The directory containing all verilog files for the project. NOTE: only works on Verilog')
+parser.add_argument('model',help='XGBoost model to use for predictions.')
+parser.add_argument('N',help='Number of features to use. Based on model.',type=int,default=500)
+
+args = parser.parse_args()
+
+dataset_parse_cmd = f"./dataset-parsing/generate_RTL_analysis.py {args.path_to_rtl} -o temp/dataset.csv"
+analyze_dataset_cmd = f"./feature-extractor/extract_features.py temp/dataset.csv temp/features.csv 500"
+
+# Must be run in directory with sensitivity-predict
+os.system(dataset_parse_cmd)
+os.chdir("feature-extractor")
+features_df = extractFeatures("../temp/dataset.csv",args.N)
+print(features_df)
+os.chdir("..")
+
+# Pass dataframe into model and predict outputs
+
+clf = xgb.XGBClassifier()
+clf.load_model(args.model)
+ynew, names = predict_model(features_df, clf)
+for i in range(len(ynew)):
+    print("module: %s, Predicted=%s" % (names[i], ynew[i]))
+
+# Print output to terminal
+
+
