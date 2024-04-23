@@ -1,0 +1,6 @@
+[submodule "dataset-parsing"]
+	path = dataset-parsing
+	url = git@github.com:HMCRTLAnalyzer/dataset-parsing.git
+[submodule "feature-extractor"]
+	path = feature-extractor
+	url = git@github.com:HMCRTLAnalyzer/feature-extractor.git
