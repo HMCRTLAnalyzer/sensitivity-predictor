@@ -4,3 +4,5 @@
 [submodule "feature-extractor"]
 	path = feature-extractor
 	url = git@github.com:HMCRTLAnalyzer/feature-extractor.git
+[submodule "feature-extractor/"]
+	branch = main
